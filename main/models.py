@@ -18,9 +18,10 @@ class BudgetInfo(models.Model):
 	user = models.ForeignKey(AccountInfo, on_delete=models.CASCADE)
 '''
 class ExpenseInfo(models.Model):
-	expenses = models.IntegerField()
-	cost = models.FloatField()
-	date_added = models.DateField()
+	expense_name = models.TextField(default='Test')
+	expenses = models.IntegerField(default=0)
+	cost = models.FloatField(default=0)
+	date_added = models.DateField(default="1960-01-01")
 	user_expense = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
