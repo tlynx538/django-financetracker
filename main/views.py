@@ -18,10 +18,8 @@ def index(request):
         	plt.savefig('main/static/main/expense.jpg')
 	except TypeError:
         	print('No data.')
-	if type(expenses_total['expenses'])==None:
-		context = {'expense_items':expense_items,'budget':budget_total['budget'],'expenses':0}
-	else:
-		context = {'expense_items':expense_items,'budget':budget_total['budget'],'expenses':abs(expense_total['expenses'])}
+
+	context = {'expense_items':expense_items,'budget':budget_total['budget'],'expenses':expense_total['expenses']}
 	return render(request,'main/index.html',context=context)
 	
 def login(request):
