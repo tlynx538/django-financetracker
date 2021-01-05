@@ -7,6 +7,7 @@ import numpy as np
 from django.http import HttpResponseRedirect,HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout,login,authenticate
+
 # using Agg backend prevents matplotlib to open up in seperate GUI
 matplotlib.use('Agg')
 # Create your views here.
