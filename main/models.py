@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 # Create your models here.
-'''
+# How to reuse AccountInfo :/ ?
 class AccountInfo(models.Model):
 	username = models.CharField(max_length=20)
 	password = models.CharField(max_length=20)
@@ -16,7 +16,7 @@ class BudgetInfo(models.Model):
 	expenses = models.IntegerField()
 	category = models.CharField(max_length=10)
 	user = models.ForeignKey(AccountInfo, on_delete=models.CASCADE)
-'''
+
 class ExpenseInfo(models.Model):
 	expense_name = models.TextField(default='Test')
 	expenses = models.IntegerField(default=0)
