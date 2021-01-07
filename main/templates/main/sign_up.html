@@ -10,8 +10,16 @@
     <title>Sign Up</title>
 </head>
 <body>
-
-
+{% for msg_type in form.error_messages %}
+    <div class="alert">
+		{% if msg_type == 'password_mismatch' %}
+			<strong>Please Enter Same Passwords on the Password Fields below</strong>
+		{% else %}
+			<strong>msg_type</strong>
+		{% endif %}	
+	</div>
+{% endfor %}	
+	
 	<div class="container">
 		<h2 class="center">Create an account</h2>
 		<form method='post' action= '{% url "sign up" %}'>

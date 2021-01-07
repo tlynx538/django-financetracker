@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .models import ExpenseInfo
+from .models import ExpenseInfo,BudgetInfo
 from django.db.models import Q,Sum
 import  matplotlib.pyplot as plt
 import matplotlib
@@ -14,22 +14,21 @@ matplotlib.use('Agg')
 
 def index(request):
     # add expenses and budget logic here
+	ExpenseInfo.objects.none()
+	BudgetInfo.objects.none()
 	expense_items = ExpenseInfo.objects.filter(user_expense=request.user).order_by('-date_added')
 	try:
         	budget_total = ExpenseInfo.objects.filter(user_expense=request.user).aggregate(budget=Sum('cost',filter=Q(cost__gt=0)))
         	expense_total = ExpenseInfo.objects.filter(user_expense=request.user).aggregate(expenses=Sum('cost',filter=Q(cost__lt=0)))
-        	fig,ax=plt.subplots()
-       		ax.bar(['Expenses','Budget'], [expense_total['expenses'],budget_total['budget']],color=['red','green'])
-        	ax.set_title('Your total expenses vs total budget')
-        	plt.savefig('main/static/main/expense.jpg')
+
 	except TypeError:
         	print('No data.')
 
 	context = {'expense_items':expense_items,'budget':budget_total['budget'],'expenses':expense_total['expenses']}
 	return render(request,'main/index.html',context=context)
 	
-def login(request):
-	return render(request,'registrations/login.html')
+#def login(request):
+#	return render(request,'registrations/login.html')
 
 
 def add_item(request):
