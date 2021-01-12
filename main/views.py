@@ -91,5 +91,4 @@ def get_expenses_graph(request):
 		response['days'].append(day)
 		response['expenditures'].append(cost)
 
-	print(response)
 	return JsonResponse(response)
