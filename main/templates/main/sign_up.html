@@ -9,21 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <title>Sign Up</title>
 </head>
-<body>
-<<<<<<< HEAD
-		
-=======
-{% for msg_type in form.error_messages %}
-    <div class="alert">
-		{% if msg_type == 'password_mismatch' %}
-			<strong>Please Enter Same Passwords on the Password Fields below</strong>
-		{% else %}
-			<strong>msg_type</strong>
-		{% endif %}	
-	</div>
-{% endfor %}	
-	
->>>>>>> parent of 406d47e... Removed error block.
+<body>	
 	<div class="container">
 		<h2 class="center">Create an account</h2>
 		<form method='post' action= '{% url "sign up" %}'>
