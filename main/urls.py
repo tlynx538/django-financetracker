@@ -7,5 +7,6 @@ urlpatterns = [
 	path('add_item',views.add_item,name='add item'),
 	path('accounts/',include('django.contrib.auth.urls')),
 	path('logout',views.logout_view,name='logout'),
-	path('sign_up',views.sign_up,name="sign up")
+	path('sign_up',views.sign_up,name="sign up"),
+	path('get_expenses_graph', views.get_expenses_graph, name="get_expenses_graph")
 ]

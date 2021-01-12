@@ -1,53 +1,58 @@
-from django.shortcuts import render,redirect
-from .models import ExpenseInfo,BudgetInfo
-from django.db.models import Q,Sum
-import  matplotlib.pyplot as plt
-import matplotlib
-import numpy as np
-from django.http import HttpResponseRedirect,HttpResponse
+from django.shortcuts import render, redirect
+from .models import ExpenseInfo, BudgetInfo
+from django.db.models import Q, Sum
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import logout,login,authenticate
+from django.contrib.auth import logout, login, authenticate
 
-# using Agg backend prevents matplotlib to open up in seperate GUI
-matplotlib.use('Agg')
-# Create your views here.
+
 
 def index(request):
-    # add expenses and budget logic here
-	ExpenseInfo.objects.none()
-	BudgetInfo.objects.none()
-	expense_items = ExpenseInfo.objects.filter(user_expense=request.user).order_by('-date_added')
-	try:
-        	budget_total = ExpenseInfo.objects.filter(user_expense=request.user).aggregate(budget=Sum('cost',filter=Q(cost__gt=0)))
-        	expense_total = ExpenseInfo.objects.filter(user_expense=request.user).aggregate(expenses=Sum('cost',filter=Q(cost__lt=0)))
-
-	except TypeError:
-        	print('No data.')
-
-	context = {'expense_items':expense_items,'budget':budget_total['budget'],'expenses':expense_total['expenses']}
-	return render(request,'main/index.html',context=context)
+	get_expenses_graph(request)
+	expense_items = ExpenseInfo.objects.filter(
+		user_expense=request.user
+	).order_by('-date_added') or {}
 	
-#def login(request):
-#	return render(request,'registrations/login.html')
+	try:
+		expense_total = ExpenseInfo.objects.filter(
+			user_expense=request.user
+		).aggregate(budget=Sum('cost'))
+		
+		if not expense_total['budget']:
+			expense_total['budget'] = "00"
+	except Exception:
+		expense_total['budget'] = "0.00"
+
+	context = {
+		'expense_items': expense_items,
+		'expenses': expense_total['budget']
+	}
+	return render(request,'main/index.html',context=context)
+
 
 
 def add_item(request):
-	# add expenses and budget logic here
 	name = request.POST['expense_name']
 	expense_cost = request.POST['cost']
 	expense_date = request.POST['expense_date']
-	ExpenseInfo.objects.create(expense_name=name,cost=expense_cost,date_added=expense_date,user_expense=request.user)
-	budget_total = ExpenseInfo.objects.filter(user_expense=request.user).aggregate(budget=Sum('cost',filet=Q(cost__gt=0)))
-	expense_total = ExpenseInfo.objects.filter(user_expense=request.user).aggregate(expenses=Sum('cost',filter=Q(cost__lt=0)))
-	fig,ax=plt.subplots()
-	ax.bar(['Expenses','Budget'],[expense_total['expenses'],budget_total['budget']],color=['red','green'])
-	ax.set_title('Your total expenses vs. Total Budget')
-	plt.savefig('main/static/main/expense.jpg')
-	return HttpResponseRedirect('index')
+
+	new_expense = ExpenseInfo.objects.create(
+		expense_name=name,
+		cost=expense_cost,
+		date_added=expense_date,
+		user_expense=request.user
+	)
+	new_expense.save()
+
+	return HttpResponseRedirect('app')
+
+
 
 def logout_view(request):
 	logout(request)
 	return redirect('/')
+
+
 
 def sign_up(request):
 	if request.method == 'POST':
@@ -61,3 +66,30 @@ def sign_up(request):
 				print(form.error_messages[msg])
 	form = UserCreationForm()
 	return render(request, 'main/sign_up.html',{'form':form})
+
+
+
+def get_expenses_graph(request):
+	"""
+	Calculates all the user's monthly expenditures.
+	"""
+	response = {
+		"days": [],
+		"expenditures": []
+	}
+
+	all_user_expenes = ExpenseInfo.objects.filter(
+		user_expense=request.user
+	).order_by("-date_added")
+
+	if not all_user_expenes:
+		return JsonResponse(response)
+	
+	for expense in all_user_expenes:
+		day = expense.date_added
+		cost = expense.cost
+		response['days'].append(day)
+		response['expenditures'].append(cost)
+
+	print(response)
+	return JsonResponse(response)
